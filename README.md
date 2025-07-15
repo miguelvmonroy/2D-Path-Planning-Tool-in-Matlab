@@ -18,4 +18,4 @@ This code on vehiculo.ino implements control of a wheeled omnidirectional mobile
 
 🛠 Technologies Used
 
-C++
+Matlab
