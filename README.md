@@ -14,7 +14,7 @@ This code on vehiculo.ino implements control of a wheeled omnidirectional mobile
 
 
 ## Table of Contents
-- [Code in Arduino](https://github.com/miguelvmonroy/omnidirectional-mobile-robot/blob/main/vehiculo.ino)
+- [Wiki](https://github.com/miguelvmonroy/2D-Path-Planning-Tool-in-Matlab/wiki)
 
 🛠 Technologies Used
 
