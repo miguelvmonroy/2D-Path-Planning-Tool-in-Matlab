@@ -1,0 +1,90 @@
+clear all; clc; clf;
+
+% Pedir puntos al usuario
+[X, Y] = ginput(31);
+grosor_de_linea = 3;
+
+[int_x, dx, ddx] = mi_interpolacion(X, 35); 
+[int_y, dy, ddy] = mi_interpolacion(Y, 35);
+
+% Calcular curvatura K
+K = abs(((dx .* ddy) - (dy .* ddx)) ./ (dx.^2 + dy.^2).^(3/2));
+K = log(K) - min(log(K));
+Kmax = max(K);
+
+% Dibujar
+hold on
+plot(X, Y, 'ro')
+for i = 1:length(K)-1
+    color = [K(i)/Kmax, 1-K(i)/Kmax, 1-K(i)/Kmax];
+    plot([int_x(i), int_x(i+1)], [int_y(i), int_y(i+1)], ...
+        'color', color, 'LineWidth', grosor_de_linea);
+end
+
+%% FUNCIONES
+
+function Dsalida = derivada(T, D, z)
+    d = T(1); x = T(2); y = T(3); w = T(4);
+    D1 = D(1)/((d - x)*(d - y)*(d - w));
+    D2 = D(2)/((x - d)*(x - y)*(x - w));
+    D3 = D(3)/((y - d)*(y - x)*(y - w));
+    D4 = D(4)/((w - d)*(w - x)*(w - y));
+    
+    Dsalida = D1*(3*z^2 - 2*z*y - 2*z*x + x*y - 2*z*w + y*w + x*w) + ...
+              D2*(3*z^2 - 2*z*y - 2*z*d + y*d - 2*z*w + y*w + d*w) + ...
+              D3*(3*z^2 - 2*z*x - 2*z*d + x*d - 2*z*w + x*w + d*w) + ...
+              D4*(3*z^2 - 2*z*x - 2*z*d + d*x - 2*z*y + x*y + d*y);
+end
+
+function DDsalida = segundaderivada(T, D, z)
+    d = T(1); x = T(2); y = T(3); w = T(4);
+    DD1 = D(1)/((d - x)*(d - y)*(d - w));
+    DD2 = D(2)/((x - d)*(x - y)*(x - w));
+    DD3 = D(3)/((y - d)*(y - x)*(y - w));
+    DD4 = D(4)/((w - d)*(w - x)*(w - y));
+    
+    DDsalida = DD1*(6*z - 2*y - 2*x - 2*w) + ...
+               DD2*(6*z - 2*y - 2*d - 2*w) + ...
+               DD3*(6*z - 2*x - 2*d - 2*w) + ...
+               DD4*(6*z - 2*x - 2*d - 2*y);
+end
+
+function [aa, pd, sd] = mi_interpolacion(D, numero_des)
+    valor_division_incremento = numero_des - 1;
+    T = 1:length(D);
+    j = 1;
+    M = length(T);
+    nc = M - mod(M+2, 3);
+    aa = [];
+    pd = [];
+    sd = [];
+
+    for b = 1:3:(nc-3)
+        resta = T(b+3) - T(b);
+        incremento_real = resta / valor_division_incremento;
+        if b == (nc-3)
+            c = 0;
+        else
+            c = 1;
+        end
+        for z = T(b):incremento_real:(T(b+3) - c*incremento_real)
+            Ts = T(b:b+3);
+            Ds = D(b:b+3);
+            
+            % Interpolación Lagrange cúbica
+            GG_1 = Ds(1)*((z - Ts(2))*(z - Ts(3))*(z - Ts(4))) / ...
+                        ((Ts(1) - Ts(2))*(Ts(1) - Ts(3))*(Ts(1) - Ts(4))) + ...
+                   Ds(2)*((z - Ts(1))*(z - Ts(3))*(z - Ts(4))) / ...
+                        ((Ts(2) - Ts(1))*(Ts(2) - Ts(3))*(Ts(2) - Ts(4))) + ...
+                   Ds(3)*((z - Ts(1))*(z - Ts(2))*(z - Ts(4))) / ...
+                        ((Ts(3) - Ts(1))*(Ts(3) - Ts(2))*(Ts(3) - Ts(4))) + ...
+                   Ds(4)*((z - Ts(1))*(z - Ts(2))*(z - Ts(3))) / ...
+                        ((Ts(4) - Ts(1))*(Ts(4) - Ts(2))*(Ts(4) - Ts(3)));
+
+            aa(j) = GG_1;
+            pd(j) = derivada(Ts, Ds, z);
+            sd(j) = segundaderivada(Ts, Ds, z);
+            j = j + 1;
+        end
+    end
+end
