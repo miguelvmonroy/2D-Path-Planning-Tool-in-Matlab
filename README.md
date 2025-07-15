@@ -1,6 +1,6 @@
 # 2D-Path-Planning-Tool-in-Matlab
 
-![image](https://raw.githubusercontent.com/miguelvmonroy/vehiculo-omnidireccional/refs/heads/main/fondovehiculo.png)
+![image](https://raw.githubusercontent.com/miguelvmonroy/2D-Path-Planning-Tool-in-Matlab/refs/heads/master/PlotMatlab.png)
 
 
 
